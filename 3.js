@@ -1,20 +1,97 @@
-// AUTO READ MORE
-function stripTags(s, n) {
-    return s.replace(/<.*?>/ig, '').split(/\s+/).slice(0, n - 1).join(' ');
+//<![CDATA[
+rn = "<h5>No related post available</h5>";
+rcomment = "comments";
+rdisable = "disable comments";
+commentYN = "no";
+var dw = "";
+titles = new Array;
+titlesNum = 0;
+urls = new Array;
+timeR = new Array;
+thumb = new Array;
+commentsNum = new Array;
+comments = new Array;
+
+function related_results_labels(c) {
+	for (var b = 0; b < c.feed.entry.length; b++) {
+		var d = c.feed.entry[b];
+		titles[titlesNum] = d.title.$t;
+		for (var a = 0; a < d.link.length; a++) {
+			if ("thr$total" in d) commentsNum[titlesNum] = d.thr$total.$t + " " + rcomment;
+			else commentsNum[titlesNum] = rdisable; if (d.link[a].rel == "alternate") {
+				urls[titlesNum] = d.link[a].href;
+				timeR[titlesNum] = d.published.$t;
+				if ("media$thumbnail" in d) thumb[titlesNum] = d.media$thumbnail.url;
+				else thumb[titlesNum] = "http://lh3.ggpht.com/--Z8SVBQZ4X8/TdDxPVMl_sI/AAAAAAAAAAA/jhAgjCpZtRQ/no-image.png";
+				titlesNum++;
+				break
+			}
+		}
+	}
 }
-function readmore(id) {
-var summ = 42 ;
-var p = document.getElementById(id);
-    imgtag = "";
-    ifrtag = "";
-    img = p.getElementsByTagName("img");
-    ifr = p.getElementsByTagName("iframe");
-    
-		 if (ifr.length >= 1) ifrtag = '<div class="blog-content-wrapper" ><div class="gdlr-blog-thumbnail gdlr-video"><iframe width="685px" height="380px" src="' + ifr[0].src + '" frameborder="0" allowfullscreen style="display:block;"></iframe></div>';
 
-    else if (img.length >= 1) imgtag = '<div class="blog-content-wrapper" ><div class="gdlr-blog-thumbnail"><a href="' + post_url + '"> <img src="' + img[0].src + '" width="685px" height="400px" /></a></div>';
-
-    else imgtag = '<div class="blog-content-wrapper" >';
-
-    p.innerHTML = '<div class="blog-content-inner-wrapper"><header class="post-header"><h3 class="gdlr-blog-title"><a href="' + post_url + '">' + post_title + '</a></h3><div class="gdlr-blog-info gdlr-title-font gdlr-info"><div class="blog-info blog-tag"><i class="fa fa-tags"></i> ' + label + '</div><div class="blog-info blog-author"><i class="fa fa-user"></i><a href="' + author_url + '" title="Posts by ' + author_name + '" rel="author">' + author_name + '</a></div><span class="gdlr-seperator"></span><div class="blog-info blog-comments"><i class="fa fa-comments"></i><a href="' + post_url + '" >' + comment + ' </a></div><div class="clear"></div></div></header>' + ifrtag + imgtag + '<div class="gdlr-blog-content"><p>' + stripTags(p.innerHTML,summ) + '</p><p> <a href="' + post_url + '" class="more-link"><span class="gdlr-button with-border excerpt-read-more">تابع القراءة »</span></a></p><div class="gdlr-social-share"><a href="http://digg.com/submit?url=' + post_url +'&#038;title=' + post_title +'" target="_blank"><img src="http://1.bp.blogspot.com/--X0PqMYO_EM/VRRFAsJkJOI/AAAAAAAAEm0/4Y_o6bvmWBw/s1600/digg.png" alt="digg-share" width="112" height="112" /></a><a href="http://www.facebook.com/share.php?u=' + post_url +'" target="_blank"><img src="http://1.bp.blogspot.com/-7KLr93ewAZI/VRRFA4fBavI/AAAAAAAAEm4/xyWY01jONOk/s1600/facebook.png" alt="facebook-share" width="112" height="112" /></a><a href="http://www.linkedin.com/shareArticle?mini=true&#038;url=' + post_url +'&#038;title=' + post_title +'" target="_blank"><img src="http://2.bp.blogspot.com/-bH0Fo6twhUM/VRRFAynQHLI/AAAAAAAAEm8/2smVRJ2YWw4/s1600/linkedin.png" alt="linked-share" width="112" height="112" /></a><a href="http://www.tumblr.com/share/link?url=' + post_url +'&amp;name=' + post_title +'" target="_blank"><img src="http://4.bp.blogspot.com/-LoH6JEkemKY/VRRFCX_KSII/AAAAAAAAEnQ/47EbsgvSy1A/s1600/tumblr.png" alt="tumblr-share" width="112" height="112" /></a><a href="http://reddit.com/submit?url=' + post_url +'&#038;title=' + post_title +'" target="_blank"><img src="http://2.bp.blogspot.com/-cGmcrYzUPZ0/VRRFB-My7fI/AAAAAAAAEnM/2zjv1rJl1qA/s1600/reddit.png" alt="reddit-share" width="112" height="112" /></a><a href="http://www.stumbleupon.com/submit?url=' + post_url +'&#038;title=' + post_title +'" target="_blank"><img src="http://1.bp.blogspot.com/-ltXXUIhkN1E/VRRFCSd3uiI/AAAAAAAAEnU/80VQeI6jmt0/s1600/stumble-upon.png" alt="stumble-upon-share" width="112" height="112" /></a><a href="http://twitter.com/home?status=' + post_title +'-' + post_url +'" target="_blank"><img src="http://4.bp.blogspot.com/-rJbzl3FAQMk/VRRFEQf0-0I/AAAAAAAAEnk/RlJNbnbh2Dw/s1600/twitter.png" alt="twitter-share" width="112" height="112" /></a><div class="clear"></div></div></div></div> </div>';
+function removeRelatedDuplicates() {
+	var b = new Array(0);
+	c = new Array(0);
+	e = new Array(0);
+	f = new Array(0);
+	g = new Array(0);
+	for (var a = 0; a < urls.length; a++)
+		if (!contains(b, urls[a])) {
+			b.length += 1;
+			b[b.length - 1] = urls[a];
+			c.length += 1;
+			c[c.length - 1] = titles[a];
+			e.length += 1;
+			e[e.length - 1] = timeR[a];
+			f.length += 1;
+			f[f.length - 1] = thumb[a];
+			g.length += 1;
+			g[g.length - 1] = commentsNum[a]
+		}
+	urls = b;
+	titles = c;
+	timeR = e;
+	thumb = f;
+	commentsNum = g
 }
+
+function contains(b, d) {
+	for (var c = 0; c < b.length; c++)
+		if (b[c] == d) return true;
+	return false
+}
+
+function printRelatedLabels(a) {
+	var y = a.indexOf("?m=0");
+	if (y != -1) a = a.replace(/\?m=0/g, "");
+	for (var b = 0; b < urls.length; b++)
+		if (urls[b] == a) {
+			urls.splice(b, 1);
+			titles.splice(b, 1);
+			timeR.splice(b, 1);
+			thumb.splice(b, 1);
+			commentsNum.splice(b, 1)
+		}
+	var c = Math.floor((titles.length - 1) * Math.random());
+	var b = 0;
+	if (titles.length == 0) dw += rn;
+	else {
+		
+		while (b < titles.length && b < 20 && b < 4) {
+			if (y != -1) urls[c] = urls[c] + "?m=0";
+			if (commentYN == "yes") comments[c] = " - " + commentsNum[c];
+			else comments[c] = "";
+			dw += '<div class="related-post-widget six columns"><div class="related-post-widget-thumbnail"><a href="' + urls[c] + '" ><img src="' + thumb[c].replace(/\/s72\-c/, "/s" + 250 + "") + '" alt="" width="150" height="150" /></a></div><div class="related-post-widget-content"><div class="related-post-widget-title"><a href="' + urls[c] + '" >' + titles[c] + '</a></div></div><div class="clear"></div></div>';
+			if (c < titles.length - 1) c++;
+			else c = 0;
+			b++
+		}
+		
+	}
+	urls.splice(0, urls.length);
+	titles.splice(0, titles.length);
+	document.getElementById("related-posts").innerHTML = dw
+};
+
+//]]>
